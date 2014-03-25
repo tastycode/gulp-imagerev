@@ -2,32 +2,42 @@ var es = require('event-stream');
 var rs = require('replacestream');
 var stream = require('stream');
 
-module.exports = function(search, replacement) {
+var fs = require('fs');
+
+module.exports = function(manifestPath) {
+  var defaultRoot = '/images/';
   var doReplace = function(file, callback) {
-    var isRegExp = search instanceof RegExp;
     var isStream = file.contents && typeof file.contents.on === 'function' && typeof file.contents.pipe === 'function';
     var isBuffer = file.contents instanceof Buffer;
 
-    if (isRegExp && isStream) {
-      return callback(new Error('gulp-replace: Cannot do regexp replace on a stream'), file);
+    var manifestContents = fs.readFileSync(manifestPath);
+    if (!manifestContents) {
+      throw new Error('Could not read manifest: ', manifestPath);
     }
+    var manifest = JSON.parse(manifestContents);
 
-    if (!isRegExp && typeof replacement === 'function') {
-      return callback(new Error('gulp-replace: Cannot do string replace with a function as replacement value'), file);
+
+    var replaceMap = {};
+    for (var original in manifest) {
+        var revved = manifest[original];
+        replaceMap[defaultRoot + original] = defaultRoot + revved;
     }
 
     if (isStream) {
-      file.contents = file.contents.pipe(rs(search, replacement));
+      for (var search in replaceMap) {
+        var replace = replaceMap[search];
+        file.contents = file.contents.pipe(rs(search, replace));
+      };
       return callback(null, file);
     }
 
     if (isBuffer) {
-      if (isRegExp) {
-        file.contents = new Buffer(String(file.contents).replace(search, replacement));
-      }
-      else {
-        file.contents = new Buffer(String(file.contents).split(search).join(replacement));
-      }
+      var contents = String(file.contents);
+      for (var search in replaceMap) {
+        var replace = replaceMap[search];
+        contents = contents.replace(search, replace);
+      };
+      file.contents = new Buffer(contents);
       return callback(null, file);
     }
 

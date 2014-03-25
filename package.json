@@ -1,7 +1,7 @@
 {
-  "name": "gulp-replace",
+  "name": "gulp-imagerev",
   "version": "0.2.0",
-  "description": "A string replace plugin for gulp",
+  "description": "A image rev replace plugin for gulp",
   "main": "index.js",
   "dependencies": {
     "event-stream": "~3.0.18",
@@ -23,10 +23,10 @@
     "gulpplugin",
     "replace"
   ],
-  "author": "Larry Davis <lazdnet@gmail.com>",
+  "author": "Tommy! <thomas.devol@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/lazd/gulp-replace/issues"
+    "url": "https://github.com/tastycode/gulp-imagerev/issues"
   },
   "engines": {
     "node": ">=0.8"
