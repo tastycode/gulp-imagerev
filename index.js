@@ -4,8 +4,12 @@ var stream = require('stream');
 
 var fs = require('fs');
 
-module.exports = function(manifestPath) {
-  var defaultRoot = '/images/';
+module.exports = function(manifestPath, options) {
+  if (typeof(options) == 'undefined') {
+    options = {
+      defaultRoot: '/images'
+    };
+  }
   var doReplace = function(file, callback) {
     var isStream = file.contents && typeof file.contents.on === 'function' && typeof file.contents.pipe === 'function';
     var isBuffer = file.contents instanceof Buffer;
@@ -20,7 +24,7 @@ module.exports = function(manifestPath) {
     var replaceMap = {};
     for (var original in manifest) {
         var revved = manifest[original];
-        replaceMap[defaultRoot + original] = defaultRoot + revved;
+        replaceMap[options.defaultRoot + '/' + original] = options.defaultRoot + revved;
     }
 
     if (isStream) {
@@ -35,7 +39,7 @@ module.exports = function(manifestPath) {
       var contents = String(file.contents);
       for (var search in replaceMap) {
         var replace = replaceMap[search];
-        contents = contents.replace(search, replace);
+        contents = contents.replace(new RegExp(search, 'g'), replace);
       };
       file.contents = new Buffer(contents);
       return callback(null, file);
