@@ -24,7 +24,7 @@ module.exports = function(manifestPath, options) {
     var replaceMap = {};
     for (var original in manifest) {
         var revved = manifest[original];
-        replaceMap[options.defaultRoot + '/' + original] = options.defaultRoot + revved;
+        replaceMap[options.defaultRoot + '/' + original] = options.defaultRoot + '/' + revved;
     }
 
     if (isStream) {
